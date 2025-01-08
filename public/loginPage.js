@@ -1,28 +1,28 @@
 // Создаем объект класса UserForm
 const userForm = new UserForm();
-// Присваиваем loginFormCallback функцию для обработки попыток авторизации
+
+// Обработка события авторизации
 userForm.loginFormCallback = (data) => {
     ApiConnector.login(data, (response) => {
-        console.log(response); // Просматриваем ответ сервера в консоли
         if (response.success) {
-            // Если авторизация успешна, обновляем страницу
+            // Обновление страницы при успешной авторизации
             location.reload();
         } else {
-            // Если авторизация не удалась, выводим сообщение об ошибке
-            alert(response.error || "Ошибка авторизации. Проверьте логин и пароль.");
+            // Вывод ошибки на страницу
+            userForm.setLoginErrorMessage(response.error);
         }
     });
 };
-// Присваиваем registerFormCallback функцию для обработки попыток регистрации
+
+// Обработка события регистрации
 userForm.registerFormCallback = (data) => {
     ApiConnector.register(data, (response) => {
-        console.log(response); // Просматриваем ответ сервера в консоли
         if (response.success) {
-            // Если регистрация успешна, обновляем страницу
+            // Обновление страницы при успешной регистрации
             location.reload();
         } else {
-            // Если регистрация не удалась, выводим сообщение об ошибке
-            alert(response.error || "Ошибка регистрации. Попробуйте снова.");
+            // Вывод ошибки на страницу
+            userForm.setRegisterErrorMessage(response.error);
         }
     });
 };

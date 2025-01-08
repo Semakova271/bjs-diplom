@@ -58,34 +58,39 @@ moneyManager.sendMoneyCallback = function(data) {
         }
     });
 };
-// Создание объекта для управления избранным
+// Работа с избранным
 const favoritesWidget = new FavoritesWidget();
+const updateFavorites = (favorites) => {
+    favoritesWidget.clearTable();
+    favoritesWidget.fillTable(favorites); // Обновляем список избранных пользователей
+};
 
-function updateFavorites() {
-    ApiConnector.getFavorites((response) => {
+// Получение списка избранного
+ApiConnector.getFavorites((response) => {
+    if (response.success) {
+        updateFavorites(response.data); // Отображаем список избранных пользователей
+        moneyManager.updateUsersList(response.data); // Обновляем выпадающий список для перевода
+    }
+});
+
+// Добавление пользователя в избранное
+favoritesWidget.addUserCallback = function(userId) {
+    ApiConnector.addUserToFavorites(userId, (response) => {
         if (response.success) {
-            favoritesWidget.clearTable(); // Очищаем текущий список
-            favoritesWidget.fillTable(response.data); // Отрисовываем новые данные
-            moneyManager.updateUsersList(response.data);
-        }
-    });
-}
-updateFavorites();
-favoritesWidget.addUserCallback = function(data) {
-    ApiConnector.addUserToFavorites(data, (response) => {
-        if (response.success) {
-            updateFavorites(); // Обновляем список избранного
-            favoritesWidget.setMessage(true, "Пользователь успешно добавлен в избранное.");
+            updateFavorites(response.data); // Обновляем только представление
+            favoritesWidget.setMessage(true, "Пользователь успешно добавлен в избранное!");
         } else {
             favoritesWidget.setMessage(false, response.error);
         }
     });
 };
-favoritesWidget.removeUserCallback = function(data) {
-    ApiConnector.removeUserFromFavorites(data, (response) => {
+
+// Удаление пользователя из избранного
+favoritesWidget.removeUserCallback = function(userId) {
+    ApiConnector.removeUserFromFavorites(userId, (response) => {
         if (response.success) {
-            updateFavorites(); // Обновляем список избранного
-            favoritesWidget.setMessage(true, "Пользователь успешно удален из избранного.");
+            updateFavorites(response.data); // Обновляем только представление
+            favoritesWidget.setMessage(true, "Пользователь успешно удален из избранного!");
         } else {
             favoritesWidget.setMessage(false, response.error);
         }
